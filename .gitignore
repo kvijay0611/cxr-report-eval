@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+# raw images are large and licensed separately: never commit them
+data/raw/

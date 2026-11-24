@@ -1,0 +1,82 @@
+{
+  "n_reports": 763,
+  "reference_abnormal_rate": 0.245,
+  "abnormal_detection_accuracy": 0.755,
+  "normal_agreement_rate": 1.0,
+  "reports_with_hallucinated_finding": 0.0,
+  "abnormal_reports_with_missed_finding": 1.0,
+  "per_label": {
+    "cardiomegaly": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 42,
+      "support": 42,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "pleural_effusion": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 16,
+      "support": 16,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "pneumothorax": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 12,
+      "support": 12,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "consolidation": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "support": 60,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "edema": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "support": 4,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "atelectasis": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 82,
+      "support": 82,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "nodule_mass": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 23,
+      "support": 23,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "fracture": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "support": 21,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  }
+}
