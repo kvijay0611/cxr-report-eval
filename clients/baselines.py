@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from .base import Report, ReportClient
 
@@ -11,7 +11,7 @@ class ConstantNormalClient(ReportClient):
 
     name = "constant_normal"
 
-    def generate(self, image_path: Optional[Path], history: Optional[str] = None) -> Report:
+    def generate(self, image_paths: Optional[List[Path]], history: Optional[str] = None) -> Report:
         return Report(
             findings=(
                 "The heart size and mediastinum are within normal limits. "

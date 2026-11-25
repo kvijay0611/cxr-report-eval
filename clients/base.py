@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 
 @dataclass
@@ -24,5 +24,5 @@ class ReportClient(ABC):
     name: str = "client"
 
     @abstractmethod
-    def generate(self, image_path: Optional[Path], history: Optional[str] = None) -> Report:
+    def generate(self, image_paths: Optional[List[Path]], history: Optional[str] = None) -> Report:
         ...

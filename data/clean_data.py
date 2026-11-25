@@ -6,14 +6,24 @@ Usage:
     python data/clean_data.py --src data/instruction_data.json --out data/processed
 """
 import argparse
+import html
 import json
 import random
 import re
+from collections import OrderedDict
 from pathlib import Path
 
 
-def norm(text: str) -> str:
-    return re.sub(r"\s+", " ", text or "").strip()
+def clean_text(text: str) -> str:
+    """Normalise whitespace, decode HTML entities, drop export artifacts
+    (a literal 'nan' from an empty field, stray '>]' fragments)."""
+    text = html.unescape(text or "")
+    text = re.sub(r"\s*>\]", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return "" if text.lower() == "nan" else text
+
+
+norm = clean_text
 
 
 def image_name(path: str) -> str:
@@ -48,23 +58,28 @@ def main():
     args = ap.parse_args()
 
     raw = json.load(open(args.src, encoding="utf-8"))
-    seen, rows = set(), []
+
+    # Group images into STUDIES. Frontal and lateral views of one exam share
+    # the same report, so scoring per image would double-count every report.
+    studies = OrderedDict()
     for item in raw:
         name = image_name(item["image"])
-        if name in seen:
-            continue
         findings, impression = parse_item(item)
         if not findings and not impression:
             continue
-        seen.add(name)
-        rows.append({
-            "id": name,
-            "patient": patient_id(name),
-            "image": name,
-            "findings": findings,
-            "impression": impression,
-            "reference": norm(f"{findings} {impression}"),
-        })
+        key = (patient_id(name), findings, impression)
+        if key not in studies:
+            studies[key] = {
+                "id": name,
+                "patient": key[0],
+                "images": [],
+                "findings": findings,
+                "impression": impression,
+                "reference": norm(f"{findings} {impression}"),
+            }
+        if name not in studies[key]["images"]:
+            studies[key]["images"].append(name)
+    rows = list(studies.values())
 
     patients = sorted({r["patient"] for r in rows})
     random.Random(args.seed).shuffle(patients)
@@ -84,7 +99,8 @@ def main():
         counts[s] += 1
     for f in files.values():
         f.close()
-    print(f"{len(rows)} images, {n} patients -> {counts}")
+    n_img = sum(len(r["images"]) for r in rows)
+    print(f"{n_img} images in {len(rows)} studies, {n} patients -> {counts} (studies)")
 
 
 if __name__ == "__main__":

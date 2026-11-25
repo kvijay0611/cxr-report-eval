@@ -22,3 +22,23 @@ def test_anonymised_token_negation():
 
 def test_none_input():
     assert extract_findings("") == set()
+
+
+def test_prominent_heart_counts_as_cardiomegaly():
+    assert extract_findings("Heart appears prominent.") == {"cardiomegaly"}
+    assert extract_findings("The heart is again mildly enlarged.") == {"cardiomegaly"}
+
+
+def test_negated_enlargement():
+    assert extract_findings("The heart is not enlarged.") == set()
+
+
+def test_no_leak_across_comma():
+    assert extract_findings("Heart size normal, pulmonary vessels prominent.") == set()
+
+
+def test_hedged_differential_is_not_definite():
+    from metrics.findings import extract_with_uncertainty
+    t = "Possibly a tortuous aorta versus an anterior mediastinal mass."
+    definite, uncertain = extract_with_uncertainty(t)
+    assert definite == set() and uncertain == {"nodule_mass"}

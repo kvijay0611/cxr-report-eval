@@ -44,10 +44,10 @@ def main():
     pairs = []
     with open(out_dir / f"{tag}_outputs.jsonl", "w", encoding="utf-8") as f:
         for i, row in enumerate(rows, 1):
-            img = Path(args.image_root) / row["image"]
-            rep = client.generate(img if args.client != "constant" else None)
+            imgs = [Path(args.image_root) / n for n in row["images"]]
+            rep = client.generate(imgs if args.client != "constant" else None)
             pairs.append((row["reference"], rep.text))
-            f.write(json.dumps({"id": row["id"], "reference": row["reference"],
+            f.write(json.dumps({"id": row["id"], "n_images": len(row["images"]), "reference": row["reference"],
                                 "prediction": rep.text,
                                 "needs_more_info": rep.needs_more_info}) + "\n")
             if i % 25 == 0:

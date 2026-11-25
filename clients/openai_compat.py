@@ -2,7 +2,7 @@ import base64
 import mimetypes
 import os
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from openai import OpenAI
 
@@ -25,9 +25,9 @@ class OpenAICompatClient(ReportClient):
             api_key=api_key or os.getenv("OPENAI_API_KEY", "EMPTY"),
         )
 
-    def generate(self, image_path: Optional[Path], history: Optional[str] = None) -> Report:
+    def generate(self, image_paths: Optional[List[Path]], history: Optional[str] = None) -> Report:
         content = [{"type": "text", "text": build_user_prompt(history)}]
-        if image_path is not None:
+        for image_path in image_paths or []:
             mime = mimetypes.guess_type(str(image_path))[0] or "image/png"
             b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
             content.append({"type": "image_url",

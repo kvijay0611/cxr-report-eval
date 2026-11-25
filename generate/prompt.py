@@ -19,7 +19,7 @@ Rules:
 
 
 def build_user_prompt(history: Optional[str]) -> str:
-    base = "Draft a report for this chest X-ray."
+    base = "Draft one report for this chest X-ray study (all attached images belong to the same exam)."
     if history:
         base += f"\nClinical history provided: {history}"
     else:
