@@ -4,6 +4,11 @@ from pathlib import Path
 from typing import List, Optional
 
 
+class TransientModelError(Exception):
+    """Server was busy / rate limited / unreachable even after retries.
+    The runner skips that study and keeps going instead of crashing."""
+
+
 @dataclass
 class Report:
     findings: str = ""

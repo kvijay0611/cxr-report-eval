@@ -15,6 +15,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from clients.base import TransientModelError
 from redteam.analysis import compare
 from redteam.perturbations import PERTURBATIONS, SHOULD_ABSTAIN
 from run_eval import make_client
@@ -79,7 +80,11 @@ def main():
                         p = Path(tmp) / f"{pname}_{row['id']}_{k}.png"
                         im.save(p)
                         paths.append(p)
-                    rep = client.generate(paths, history)
+                    try:
+                        rep = client.generate(paths, history)
+                    except TransientModelError as e:
+                        print(f"  skipped {pname}/{row['id']}: {e} (rerun to retry it)")
+                        continue
                     rec = {"id": row["id"], "text": rep.text,
                            "needs_more_info": rep.needs_more_info,
                            "missing_info": rep.missing_info}

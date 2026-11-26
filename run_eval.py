@@ -9,6 +9,7 @@ import argparse
 import json
 from pathlib import Path
 
+from clients.base import TransientModelError
 from metrics.score import score
 
 
@@ -41,11 +42,17 @@ def main():
     out_dir.mkdir(exist_ok=True)
     tag = f"{client.name.replace('/', '_')}_{args.split}"
 
-    pairs = []
+    pairs, failed = [], 0
     with open(out_dir / f"{tag}_outputs.jsonl", "w", encoding="utf-8") as f:
         for i, row in enumerate(rows, 1):
             imgs = [Path(args.image_root) / n for n in row["images"]]
-            rep = client.generate(imgs if args.client != "constant" else None)
+            try:
+                rep = client.generate(imgs if args.client != "constant" else None)
+            except TransientModelError as e:
+                failed += 1
+                print(f"  skipped {row['id']}: {e}")
+                f.write(json.dumps({"id": row["id"], "error": str(e)}) + "\n")
+                continue
             pairs.append((row["reference"], rep.text))
             f.write(json.dumps({"id": row["id"], "n_images": len(row["images"]), "reference": row["reference"],
                                 "prediction": rep.text,
@@ -55,7 +62,7 @@ def main():
 
     result = score(pairs)
     json.dump(result, open(out_dir / f"{tag}_scores.json", "w"), indent=2)
-    print(f"\n{client.name} on {args.split}: {result['n_reports']} reports")
+    print(f"\n{client.name} on {args.split}: {result['n_reports']} reports scored, {failed} failed (excluded)")
     for k in ("reference_abnormal_rate", "abnormal_detection_accuracy", "normal_agreement_rate",
               "reports_with_hallucinated_finding", "abnormal_reports_with_missed_finding"):
         print(f"  {k}: {result[k]}")
